@@ -635,7 +635,7 @@ body::after {
     <div class="day-ring-text">
       <div class="day-ring-status"    id="dayRingStatus">Loading…</div>
       <div class="day-ring-remaining" id="dayRingRemaining">—</div>
-      <div class="day-ring-hours">8:00 AM – 12:00 AM</div>
+      <div class="day-ring-hours" id="dayRingHours">—</div>
     </div>
   </div>
 
@@ -700,8 +700,16 @@ body::after {
   // Paste your Anthropic key here to enable ✨ Polish. Empty = falls back to plain add.
   const ANTHROPIC_API_KEY = '';
 
-  const WAKE_HOUR  = 8;
-  const SLEEP_HOUR = 24;
+  // ---------- Day Ring schedule (edit to change your day's start/end) ----------
+  // WAKE_HOUR  = hour your day starts (24h clock). 8 = 8 AM, 10 = 10 AM.
+  // SLEEP_HOUR = hour your day ends. Use 24 = midnight. For an end time AFTER
+  //              midnight, keep counting: 1 AM = 25, 2 AM = 26, 3 AM = 27.
+  // Examples:
+  //   8 AM → midnight   :  WAKE_HOUR =  8, SLEEP_HOUR = 24
+  //   10 AM → 2 AM      :  WAKE_HOUR = 10, SLEEP_HOUR = 26
+  //   6 AM → 11 PM      :  WAKE_HOUR =  6, SLEEP_HOUR = 23
+  const WAKE_HOUR  = 10;
+  const SLEEP_HOUR = 26;
 
   // ---------- storage helpers ----------
   function storeGet(key) {
@@ -919,16 +927,30 @@ body::after {
   fillEl.setAttribute('stroke-dasharray', C);
   fillEl.setAttribute('stroke-dashoffset', C);
 
+  function formatScheduleHour(h24) {
+    const h = ((h24 % 24) + 24) % 24;
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    let hr = h % 12; if (hr === 0) hr = 12;
+    return hr + ':00 ' + ampm;
+  }
+
   function updateDayRing() {
     const now = new Date();
-    const hours = now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600;
+    const rawHours = now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600;
+    // If SLEEP_HOUR crosses midnight (e.g. 26 = 2 AM), treat early-morning
+    // clock time as a continuation of yesterday: 1 AM → 25, 1:30 AM → 25.5.
+    let hours = rawHours;
+    if (SLEEP_HOUR > 24 && rawHours < (SLEEP_HOUR - 24)) hours = rawHours + 24;
+
     const percentEl   = document.getElementById('dayRingPercent');
     const phaseEl     = document.getElementById('dayRingPhase');
     const clockEl     = document.getElementById('dayRingClock');
     const statusEl    = document.getElementById('dayRingStatus');
     const remainingEl = document.getElementById('dayRingRemaining');
+    const hoursLabel  = document.getElementById('dayRingHours');
 
     clockEl.textContent = formatClock(now);
+    if (hoursLabel) hoursLabel.textContent = formatScheduleHour(WAKE_HOUR) + ' – ' + formatScheduleHour(SLEEP_HOUR);
 
     if (hours < WAKE_HOUR) {
       fillEl.setAttribute('stroke-dashoffset', C);
