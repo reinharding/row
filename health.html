@@ -83,7 +83,7 @@ main {
   display: flex; align-items: center; gap: 12px;
 }
 .section-title::before { content: '≡'; font-size: 14px; opacity: 0.5; }
-.water-embed { margin-top: 56px; }
+.water-embed { margin-bottom: 56px; }
 .water-iframe {
   display: block;
   width: 100%;
@@ -95,7 +95,7 @@ main {
   color-scheme: dark;
 }
 @media (max-width: 480px) {
-  .water-embed { margin-top: 40px; }
+  .water-embed { margin-bottom: 40px; }
   .water-iframe { height: 780px; }
 }
 
@@ -470,6 +470,11 @@ main {
 <body>
 
 <main>
+  <section id="water" class="water-embed">
+    <div class="section-title">Water Tracker</div>
+    <iframe src="po-water.html" class="water-iframe" loading="lazy" title="Water Tracker"></iframe>
+  </section>
+
   <div class="section-title">Daily Stack</div>
 
   <div class="stack-card">
@@ -511,11 +516,6 @@ main {
       </div>
     </div>
   </div>
-
-  <section id="water" class="water-embed">
-    <div class="section-title">Water Tracker</div>
-    <iframe src="po-water.html" class="water-iframe" loading="lazy" title="Water Tracker"></iframe>
-  </section>
 
   <div class="attribution">// editable template · all data stays in your browser</div>
 </main>
