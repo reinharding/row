@@ -54,8 +54,9 @@
       origRemove(k);
       try { if (!suppressSync && matches(k)) schedulePush(); } catch (e) {}
     };
-    function applyRemote(remote) {
+    function applyRemote(remote, opts) {
       if (!remote || typeof remote !== 'object') return false;
+      const deleteMissing = !opts || opts.deleteMissing !== false;
       suppressSync = true;
       let changed = false;
       try {
@@ -65,8 +66,10 @@
           const local = localStorage.getItem(k);
           if (local !== incoming) { try { origSet(k, incoming); changed = true; } catch (e) {} }
         }
-        for (const k of listAllKeys()) {
-          if (!(k in remote)) { try { origRemove(k); changed = true; } catch (e) {} }
+        if (deleteMissing) {
+          for (const k of listAllKeys()) {
+            if (!(k in remote)) { try { origRemove(k); changed = true; } catch (e) {} }
+          }
         }
       } finally { suppressSync = false; }
       if (changed && typeof onApplied === 'function') { try { onApplied(); } catch (e) {} }
@@ -108,13 +111,25 @@
     (async function init() {
       supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
       try {
+        const localBefore = collect();
         const { data, error } = await supa.from('app_state').select('data').eq('key', appKey).maybeSingle();
-        if (!error && data && data.data && Object.keys(data.data).length > 0) {
-          lastSyncedJson = JSON.stringify(data.data);
-          applyRemote(data.data);
-        } else if (Object.keys(collect()).length > 0) {
-          schedulePush();
+        const remote = (!error && data && data.data) ? data.data : {};
+        const hasRemote = Object.keys(remote).length > 0;
+
+        if (hasRemote) {
+          // Merge remote into local without wiping local-only keys.
+          // An unsynced add from a previous mobile session lives only in
+          // localStorage; deleting it here would lose user input.
+          applyRemote(remote, { deleteMissing: false });
         }
+
+        // Track what the cloud currently has so pushNow's diff check sees
+        // local-only keys as a real change worth uploading.
+        lastSyncedJson = JSON.stringify(remote);
+
+        // If local has any key not in remote, push so the cloud catches up.
+        const localOnly = Object.keys(localBefore).some(k => !(k in remote));
+        if (localOnly) schedulePush();
       } catch (e) {}
       supa.channel('app_state_' + appKey)
         .on('postgres_changes', {
@@ -130,6 +145,11 @@
     })();
     window.addEventListener('beforeunload', flushOnUnload);
     window.addEventListener('pagehide', flushOnUnload);
+    // iOS Safari fires visibilitychange more reliably than pagehide when
+    // the app is backgrounded — gives the cloud push one more chance.
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') flushOnUnload();
+    });
     window.addEventListener('storage', (e) => { if (e.key && matches(e.key)) schedulePush(); });
   };
 })();
