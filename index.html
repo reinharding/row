@@ -1442,6 +1442,7 @@ body::after {
   const FP_CATEGORIES = {
     health: {
       label: 'Health', emoji: '💊',
+      context: '',
       pool: [
         'Walk 30 minutes before lunch',
         'Cook one meal at home today',
@@ -1455,28 +1456,42 @@ body::after {
     },
     work: {
       label: 'Work', emoji: '💼',
+      context:
+        'The user is a college student studying data analytics whose main objective is to ' +
+        'study consistently and land a data analyst internship. Goals should target either ' +
+        '(a) building core data-analyst skills — SQL, Python (pandas/NumPy), statistics, Excel, ' +
+        'Tableau or Power BI, machine learning fundamentals — or (b) progressing toward an ' +
+        'internship — resume polish, portfolio projects, networking on LinkedIn, applications, ' +
+        'or interview prep (behavioral or technical). Avoid generic office or full-time-job advice.',
       pool: [
-        'Inbox to zero by noon',
-        'Write tomorrow\'s top 3 tasks before logging off',
-        'Deep work block 9–11 AM with Slack closed',
-        'Read one industry article and take notes',
-        'Reply to the oldest unanswered email',
-        'Update one section of your resume or portfolio',
-        'Reach out to one professional contact',
-        'Finish the smallest blocking task first'
+        'Solve 3 SQL practice problems on DataLemur',
+        'Apply to 3 data analyst internships before noon',
+        'Polish one resume bullet with a quantified result',
+        'Spend 30 min on pandas/NumPy exercises',
+        'Cold-message one data analyst on LinkedIn',
+        'Write a 1-page case study for your portfolio',
+        'Build one chart in Tableau from a Kaggle dataset',
+        'Mock-answer 2 behavioral interview questions'
       ]
     },
-    social: {
-      label: 'Social', emoji: '👥',
+    mental: {
+      label: 'Mental', emoji: '🧠',
+      context:
+        'The user wants to improve their mental health. A healthy social life is one ' +
+        'component of mental wellbeing, so goals can include solo mental-health practices ' +
+        '(mindfulness, journaling, gratitude, breathwork, stress reduction, screen-time ' +
+        'limits, time outside) as well as social-connection goals (reaching out to a friend, ' +
+        'spending time with someone, real conversations). Mix the two — do not focus only on ' +
+        'social goals.',
       pool: [
+        '5-minute meditation before checking your phone',
+        'Write 3 things you\'re grateful for tonight',
+        'Take a phone-free 20-minute walk outside',
+        'Journal one page about how you\'re feeling',
+        'Limit social media to 30 minutes today',
         'Text a friend you haven\'t talked to in 2+ weeks',
-        'Make a 15-minute call with someone you care about',
-        'Schedule coffee or a walk with someone this week',
-        'Give three sincere compliments today',
-        'Eat one meal not alone',
-        'Reply to that DM you\'ve been putting off',
-        'Ask a coworker how their weekend went',
-        'Send a thank-you to someone who helped you'
+        'Have one real conversation with someone today',
+        'Box-breathing for 5 minutes when you feel stressed'
       ]
     }
   };
@@ -1552,6 +1567,7 @@ body::after {
     const info = FP_CATEGORIES[cat];
     const prompt =
       "Suggest one concrete goal for tomorrow in the category '" + info.label + "'. " +
+      (info.context ? info.context + ' ' : '') +
       "The goal must be completable in a single day, action-oriented (verb + clear object), " +
       "and under 60 characters. Bad example: 'be healthier'. Good example: 'walk 30 minutes before lunch'. " +
       "Respond with ONLY the goal text — no quotes, no preamble, no JSON.";
@@ -1668,7 +1684,7 @@ body::after {
     <div class="fp-modal-seg" id="fpSeg">
       <button type="button" data-category="health"><span class="fp-modal-seg-emoji">💊</span><span>Health</span></button>
       <button type="button" data-category="work"><span class="fp-modal-seg-emoji">💼</span><span>Work</span></button>
-      <button type="button" data-category="social"><span class="fp-modal-seg-emoji">👥</span><span>Social</span></button>
+      <button type="button" data-category="mental"><span class="fp-modal-seg-emoji">🧠</span><span>Mental</span></button>
     </div>
     <div class="fp-modal-loading" id="fpLoading">Thinking up a goal…</div>
     <div class="fp-modal-goal" id="fpGoal">
