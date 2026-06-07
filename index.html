@@ -588,6 +588,130 @@ body::after {
 }
 .gm-status.gm-status-error { color: var(--danger); }
 
+/* ===== Focus Planner modal ===== */
+.fp-open-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 14px;
+  margin: 0 0 10px;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.04);
+  color: var(--text-primary);
+  font-family: inherit; font-size: 12px; font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s, border-color 0.15s;
+}
+.fp-open-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.18); }
+.fp-modal-bg {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.65);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  align-items: center; justify-content: center;
+  padding: max(20px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom));
+}
+.fp-modal-bg.show { display: flex; }
+.fp-modal {
+  width: 100%; max-width: 380px;
+  background: #15151a;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  padding: 22px 20px 18px;
+  color: var(--text-primary);
+  font-family: inherit;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+  max-height: calc(100vh - 40px); overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.fp-modal h2 {
+  font-size: 18px; font-weight: 700; margin: 0 0 4px;
+  letter-spacing: -0.01em;
+}
+.fp-modal .fp-sub {
+  font-size: 12.5px; color: var(--text-secondary);
+  margin: 0 0 16px;
+}
+.fp-modal-seg {
+  display: flex; gap: 6px; margin-bottom: 14px;
+}
+.fp-modal-seg button {
+  flex: 1; min-width: 0;
+  display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px;
+  padding: 12px 6px;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.03);
+  color: var(--text-primary);
+  font-family: inherit; font-size: 11px; font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s, border-color 0.15s, transform 0.10s;
+}
+.fp-modal-seg button:hover { background: rgba(255,255,255,0.07); }
+.fp-modal-seg button:active { transform: scale(0.97); }
+.fp-modal-seg button.is-active {
+  background: linear-gradient(180deg, rgba(125,211,252,0.18), rgba(110,231,183,0.18));
+  border-color: rgba(125,211,252,0.35);
+  color: #FFFFFF;
+}
+.fp-modal-seg-emoji { font-size: 20px; line-height: 1; filter: grayscale(0.15); }
+.fp-modal-loading {
+  display: none;
+  text-align: center; padding: 18px 0; color: var(--text-tertiary);
+  font-size: 13px;
+}
+.fp-modal-loading.show { display: block; }
+.fp-modal-goal {
+  display: none;
+  margin: 8px 0 14px;
+  padding: 14px 14px;
+  border-radius: 12px;
+  background: rgba(125,211,252,0.05);
+  border: 1px solid rgba(125,211,252,0.15);
+}
+.fp-modal-goal.show { display: block; }
+.fp-modal-goal-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin-bottom: 6px;
+}
+.fp-modal-goal-text {
+  font-size: 15px; font-weight: 600; line-height: 1.35;
+  color: var(--text-primary);
+}
+.fp-modal-actions {
+  display: none;
+  gap: 8px;
+}
+.fp-modal-actions.show { display: flex; }
+.fp-modal-actions button {
+  flex: 1;
+  padding: 11px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.04);
+  color: var(--text-primary);
+  font-family: inherit; font-size: 13px; font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s, border-color 0.15s, transform 0.10s;
+}
+.fp-modal-actions button:hover { background: rgba(255,255,255,0.07); }
+.fp-modal-actions button:active { transform: scale(0.97); }
+.fp-modal-actions .fp-btn-add {
+  background: linear-gradient(180deg, rgba(125,211,252,0.28), rgba(110,231,183,0.28));
+  border-color: rgba(125,211,252,0.35);
+  color: #FFFFFF;
+}
+.fp-modal-actions .fp-btn-add:hover {
+  background: linear-gradient(180deg, rgba(125,211,252,0.4), rgba(110,231,183,0.4));
+}
+.fp-modal-actions button:disabled { opacity: 0.5; cursor: not-allowed; }
+
 @media (max-width: 480px) {
   body { padding: max(20px, env(safe-area-inset-top)) 14px 50px; }
   .gm-card { padding: 16px; }
@@ -682,6 +806,7 @@ body::after {
       </div>
       <ul id="tomorrowList" class="goal-list gm-list"></ul>
       <div id="tomorrowEmpty" class="empty-state">Nothing planned for tomorrow yet</div>
+      <button type="button" id="fpOpenBtn" class="fp-open-btn">✨ Plan tomorrow's focus</button>
       <div class="goal-input-wrap gm-input-wrap">
         <input id="tomorrowInput" class="gm-input" type="text" placeholder="Add a goal for tomorrow…" autocomplete="off">
         <button type="button" id="tomorrowAddBtn"    class="gm-add">+ Add</button>
@@ -1313,6 +1438,204 @@ body::after {
     loadTomorrow
   );
 
+  // ---------- Tomorrow Focus Planner ----------
+  const FP_CATEGORIES = {
+    health: {
+      label: 'Health', emoji: '💊',
+      pool: [
+        'Walk 30 minutes before lunch',
+        'Cook one meal at home today',
+        'Stretch 10 minutes after waking',
+        'Drink 2L of water by 6 PM',
+        'In bed by 11 PM with no screens',
+        '20 pushups before breakfast',
+        'No processed sugar today',
+        'Take a short walk after dinner'
+      ]
+    },
+    work: {
+      label: 'Work', emoji: '💼',
+      pool: [
+        'Inbox to zero by noon',
+        'Write tomorrow\'s top 3 tasks before logging off',
+        'Deep work block 9–11 AM with Slack closed',
+        'Read one industry article and take notes',
+        'Reply to the oldest unanswered email',
+        'Update one section of your resume or portfolio',
+        'Reach out to one professional contact',
+        'Finish the smallest blocking task first'
+      ]
+    },
+    social: {
+      label: 'Social', emoji: '👥',
+      pool: [
+        'Text a friend you haven\'t talked to in 2+ weeks',
+        'Make a 15-minute call with someone you care about',
+        'Schedule coffee or a walk with someone this week',
+        'Give three sincere compliments today',
+        'Eat one meal not alone',
+        'Reply to that DM you\'ve been putting off',
+        'Ask a coworker how their weekend went',
+        'Send a thank-you to someone who helped you'
+      ]
+    }
+  };
+
+  let fpCurrentCategory = null;
+  let fpCurrentGoal = null;
+
+  function fpEls() {
+    return {
+      bg:       document.getElementById('fpModal'),
+      seg:      document.getElementById('fpSeg'),
+      loading:  document.getElementById('fpLoading'),
+      goalBox:  document.getElementById('fpGoal'),
+      eyebrow:  document.getElementById('fpGoalEyebrow'),
+      goalText: document.getElementById('fpGoalText'),
+      actions:  document.getElementById('fpActions'),
+      addBtn:   document.getElementById('fpAddBtn'),
+      reroll:   document.getElementById('fpRerollBtn'),
+      skip:     document.getElementById('fpSkipBtn')
+    };
+  }
+
+  function fpResetUI() {
+    const e = fpEls();
+    fpCurrentCategory = null;
+    fpCurrentGoal = null;
+    e.seg.querySelectorAll('button').forEach(b => b.classList.remove('is-active'));
+    e.loading.classList.remove('show');
+    e.goalBox.classList.remove('show');
+    e.actions.classList.remove('show');
+    e.goalText.textContent = '—';
+  }
+
+  function fpOpen() {
+    const e = fpEls();
+    fpResetUI();
+    e.bg.classList.add('show');
+    document.body.classList.add('topbar-modal-open');
+  }
+
+  function fpClose() {
+    const e = fpEls();
+    e.bg.classList.remove('show');
+    document.body.classList.remove('topbar-modal-open');
+    // Mark this tomorrow-date as "popup shown" so auto-trigger won't re-fire
+    // for the same tomorrow even if the user reloads.
+    try { localStorage.setItem('focusPlan:shown:' + getTomorrowDateString(), '1'); } catch (err) {}
+  }
+
+  function fpPickCategory(cat) {
+    if (!FP_CATEGORIES[cat]) return;
+    fpCurrentCategory = cat;
+    const e = fpEls();
+    e.seg.querySelectorAll('button').forEach(b => {
+      b.classList.toggle('is-active', b.getAttribute('data-category') === cat);
+    });
+    e.eyebrow.textContent = 'Suggested · ' + FP_CATEGORIES[cat].label;
+    fpGenerate();
+  }
+
+  function fpGenerateFromPool(cat) {
+    const pool = (FP_CATEGORIES[cat] && FP_CATEGORIES[cat].pool) || [];
+    if (pool.length === 0) return 'Pick one small win for tomorrow';
+    // Avoid the same suggestion twice in a row if possible.
+    let pick = pool[Math.floor(Math.random() * pool.length)];
+    if (pool.length > 1 && pick === fpCurrentGoal) {
+      pick = pool[(pool.indexOf(pick) + 1) % pool.length];
+    }
+    return pick;
+  }
+
+  async function fpGenerateViaAI(cat) {
+    const info = FP_CATEGORIES[cat];
+    const prompt =
+      "Suggest one concrete goal for tomorrow in the category '" + info.label + "'. " +
+      "The goal must be completable in a single day, action-oriented (verb + clear object), " +
+      "and under 60 characters. Bad example: 'be healthier'. Good example: 'walk 30 minutes before lunch'. " +
+      "Respond with ONLY the goal text — no quotes, no preamble, no JSON.";
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 80,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    if (!res.ok) throw new Error('bad status ' + res.status);
+    const data = await res.json();
+    let text = (data && data.content && data.content[0] && data.content[0].text) || '';
+    text = text.trim().replace(/^["'`]+|["'`.]+$/g, '').trim();
+    if (!text || text.length > 100) throw new Error('bad text');
+    return text;
+  }
+
+  async function fpGenerate() {
+    if (!fpCurrentCategory) return;
+    const e = fpEls();
+    e.loading.classList.add('show');
+    e.goalBox.classList.remove('show');
+    e.actions.classList.remove('show');
+
+    let goal = null;
+    if (ANTHROPIC_API_KEY) {
+      try { goal = await fpGenerateViaAI(fpCurrentCategory); } catch (err) { goal = null; }
+    }
+    if (!goal) goal = fpGenerateFromPool(fpCurrentCategory);
+
+    fpCurrentGoal = goal;
+    e.goalText.textContent = goal;
+    e.loading.classList.remove('show');
+    e.goalBox.classList.add('show');
+    e.actions.classList.add('show');
+  }
+
+  function fpAdd() {
+    if (!fpCurrentGoal) return;
+    const key = tomorrowKey();
+    const list = getGoals(key);
+    list.push({ text: fpCurrentGoal, done: false });
+    setGoals(key, list);
+    fpClose();
+    loadTomorrow();
+  }
+
+  function fpMaybeAutoOpen() {
+    try {
+      const tomorrow = getTomorrowDateString();
+      const shownKey = 'focusPlan:shown:' + tomorrow;
+      if (localStorage.getItem(shownKey)) return;
+      const hour = new Date().getHours();
+      if (hour < 20) return;
+      const list = getGoals('goals:' + tomorrow);
+      if (list && list.length > 0) return;
+      fpOpen();
+    } catch (err) {}
+  }
+
+  function fpInit() {
+    const e = fpEls();
+    if (!e.bg) return;
+    document.getElementById('fpOpenBtn').addEventListener('click', fpOpen);
+    e.seg.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', () => fpPickCategory(btn.getAttribute('data-category')));
+    });
+    e.addBtn.addEventListener('click', fpAdd);
+    e.reroll.addEventListener('click', fpGenerate);
+    e.skip.addEventListener('click', fpClose);
+    e.bg.addEventListener('click', (evt) => { if (evt.target === e.bg) fpClose(); });
+    document.addEventListener('keydown', (evt) => {
+      if (evt.key === 'Escape' && e.bg.classList.contains('show')) fpClose();
+    });
+  }
+
   // ---------- Boot ----------
   rollover();
   processStreak();
@@ -1322,6 +1645,13 @@ body::after {
   updateDayRing();
   setInterval(updateDayRing, 60 * 1000);
   startTicker();
+  // Modal HTML lives below this <script> tag, so wait for the parser to
+  // finish before wiring up handlers and checking auto-open.
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => { fpInit(); fpMaybeAutoOpen(); }, { once: true });
+  } else {
+    fpInit(); fpMaybeAutoOpen();
+  }
 
   // Re-render when storage changes from another tab (or our bridged parent).
   window.addEventListener('storage', () => {
@@ -1329,6 +1659,30 @@ body::after {
   });
 })();
 </script>
+
+<!-- ===== Focus Planner modal ===== -->
+<div class="fp-modal-bg" id="fpModal" role="dialog" aria-modal="true" aria-labelledby="fpModalTitle">
+  <div class="fp-modal">
+    <h2 id="fpModalTitle">Plan tomorrow's focus</h2>
+    <p class="fp-sub">What aspect do you want to focus on tomorrow?</p>
+    <div class="fp-modal-seg" id="fpSeg">
+      <button type="button" data-category="health"><span class="fp-modal-seg-emoji">💊</span><span>Health</span></button>
+      <button type="button" data-category="work"><span class="fp-modal-seg-emoji">💼</span><span>Work</span></button>
+      <button type="button" data-category="social"><span class="fp-modal-seg-emoji">👥</span><span>Social</span></button>
+    </div>
+    <div class="fp-modal-loading" id="fpLoading">Thinking up a goal…</div>
+    <div class="fp-modal-goal" id="fpGoal">
+      <div class="fp-modal-goal-eyebrow" id="fpGoalEyebrow">Suggested goal</div>
+      <div class="fp-modal-goal-text" id="fpGoalText">—</div>
+    </div>
+    <div class="fp-modal-actions" id="fpActions">
+      <button type="button" class="fp-btn-add" id="fpAddBtn">Add</button>
+      <button type="button" id="fpRerollBtn">Reroll</button>
+      <button type="button" id="fpSkipBtn">Skip</button>
+    </div>
+  </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   if (typeof initCloudSync !== 'function') return;
