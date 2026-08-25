@@ -136,31 +136,33 @@ html, body {
 .habit-bar-fill.progress { background: var(--info); }
 .habit-bar-fill.warn { background: var(--bad); }
 
-.habit-checkin { display: flex; gap: 8px; }
-.habit-checkin input[type="number"] {
-  flex: 1; background: rgba(0,0,0,0.28);
-  border: 1px solid var(--border);
+.habit-checkin { display: grid; grid-template-columns: 44px 1fr; gap: 8px; }
+.habit-minus-btn {
+  background: rgba(255,255,255,0.06);
+  border: none; border-radius: 10px;
   color: var(--text-1);
-  font-family: inherit; font-size: 14px;
-  padding: 10px 12px; border-radius: 10px; outline: none;
-  -moz-appearance: textfield;
-}
-.habit-checkin input[type="number"]::-webkit-outer-spin-button,
-.habit-checkin input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-.habit-checkin input:focus {
-  border-color: rgba(110,231,183,0.40);
-  box-shadow: 0 0 0 2px rgba(110,231,183,0.10);
-}
-.habit-checkin-btn {
-  padding: 10px 16px;
-  border: none;
-  background: linear-gradient(180deg, #ffffff 0%, #e8e5dd 100%);
-  color: #0a0a0b; border-radius: 10px;
-  font-family: inherit; font-size: 13px; font-weight: 700;
-  cursor: pointer; white-space: nowrap;
+  font-size: 18px; font-weight: 700;
+  cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
-.habit-checkin-btn:hover { background: #ffffff; }
+.habit-minus-btn:hover { background: rgba(255,255,255,0.10); }
+.habit-minus-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.habit-plus-btn {
+  background: linear-gradient(180deg, #ffffff 0%, #e8e5dd 100%);
+  color: #0a0a0b; border: none; border-radius: 10px;
+  font-family: inherit; font-size: 14px; font-weight: 700;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.habit-plus-btn:hover { background: #ffffff; }
+
+.habit-history { display: flex; gap: 4px; margin-top: 12px; }
+.habit-history-sq {
+  flex: 1; max-width: 16px; height: 16px; border-radius: 4px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+}
+.habit-history-sq.met { background: var(--good); border-color: var(--good); }
 
 .empty-state {
   text-align: center; font-size: 13px; color: var(--text-3);
@@ -364,6 +366,20 @@ html, body {
     $('dayPillLabel').textContent = dows[d.getDay()] + ', ' + mons[d.getMonth()] + ' ' + d.getDate();
   }
 
+  function renderHistorySquares(habit) {
+    let html = '';
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const k = dateKey(d);
+      const v = (state.checkins[habit.id] || {})[k] || 0;
+      const met = habitMet(habit, v);
+      const label = k + ': ' + v + (habit.unit ? ' ' + habit.unit : '') + ' — ' + (met ? 'met' : 'not met');
+      html += '<div class="habit-history-sq' + (met ? ' met' : '') + '" title="' + escape(label) + '"></div>';
+    }
+    return '<div class="habit-history">' + html + '</div>';
+  }
+
   function renderHabits() {
     const list = $('habitsList');
     if (!state.habits.length) {
@@ -386,18 +402,24 @@ html, body {
         +   '<div class="habit-bar-fill ' + barCls + '" style="width:' + pct + '%"></div>'
         + '</div>'
         + '<div class="habit-checkin">'
-        +   '<input type="number" class="checkin-input" data-id="' + habit.id + '" step="1" value="' + value + '">'
-        +   '<button class="habit-checkin-btn" data-id="' + habit.id + '">Check in</button>'
+        +   '<button class="habit-minus-btn" data-id="' + habit.id + '"' + (value <= 0 ? ' disabled' : '') + ' aria-label="Remove one">−</button>'
+        +   '<button class="habit-plus-btn" data-id="' + habit.id + '">+1</button>'
         + '</div>'
+        + renderHistorySquares(habit)
         + '</div>';
     }).join('');
 
-    list.querySelectorAll('.habit-checkin-btn').forEach(btn => {
+    list.querySelectorAll('.habit-plus-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const id = btn.dataset.id;
-        const input = list.querySelector('.checkin-input[data-id="' + id + '"]');
-        const v = Number(input.value) || 0;
-        setTodayValue(id, v);
+        setTodayValue(id, todayValue(id) + 1);
+        renderHabits();
+      });
+    });
+    list.querySelectorAll('.habit-minus-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        setTodayValue(id, Math.max(0, todayValue(id) - 1));
         renderHabits();
       });
     });
