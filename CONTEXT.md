@@ -24,10 +24,10 @@ is stored per Habit but not yet used for any streak calculation (not
 built here).
 
 **App Shell**: The chrome injected by `topbar.js` on every page except
-`finance.html` (being removed) and embedded iframes — the sticky top bar
-and the fixed bottom tab bar (Main/Health/Fitness/Habits). Distinct from
-each page's own content; a page "joining the shell" means it stops
-opting out of this injected chrome.
+embedded iframes — the sticky top bar and the fixed bottom tab bar
+(Main/Health/Fitness/Habits, mobile-only, hidden at `>= 768px`).
+Distinct from each page's own content; a page "joining the shell" means
+it stops opting out of this injected chrome.
 
 ## Notes
 
