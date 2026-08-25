@@ -1,0 +1,302 @@
+<!--
+PROTOTYPE — throwaway. Not linked from any real page, not shipped.
+Round 5: typeface exploration. Shell + content style + tab-bar icons
+are converged (round 4). This round only swaps the font-family across
+four candidates so the look can be judged with real type, not the
+system default. Switchable via ?variant=A|B|C|D (default A).
+
+Once a font is picked: fold it into habits.html (and the shared parts
+into topbar.js), add the Google Fonts <link> if a webfont was chosen,
+then delete this file (keep it on a throwaway branch as the
+source-of-record for the decision).
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PROTOTYPE — font exploration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; background: #050506; color: #fff; min-height: 100vh; }
+
+  .proto-banner {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: #ff8a2b; color: #1a0f00;
+    font-family: ui-monospace, monospace; font-size: 11px; font-weight: 700;
+    text-align: center; padding: 5px 8px; letter-spacing: 0.04em;
+  }
+  .proto-switcher {
+    position: fixed; top: 32px; left: 50%; transform: translateX(-50%);
+    z-index: 1000;
+    display: flex; align-items: center; gap: 10px;
+    background: #1c1c1f; border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 999px; padding: 6px 8px 6px 6px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    font-family: ui-monospace, monospace; font-size: 12px;
+  }
+  .proto-switcher button.arrow {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: rgba(255,255,255,0.08); border: none; color: #fff;
+    cursor: pointer; font-size: 14px; line-height: 1;
+  }
+  .proto-switcher button.arrow:hover { background: rgba(255,255,255,0.18); }
+  .proto-switcher .label { color: #fff; font-weight: 700; white-space: nowrap; }
+  .proto-switcher .label small { color: rgba(255,255,255,0.5); font-weight: 400; margin-left: 4px; }
+  .proto-stage { display: flex; justify-content: center; padding: 80px 16px 40px; min-height: 100vh; }
+  .phone {
+    width: 390px; max-width: 100%; min-height: 780px;
+    border-radius: 40px; border: 8px solid #000; overflow: hidden;
+    position: relative; box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  }
+  .screen { position: relative; height: 780px; overflow-y: auto; }
+
+  /* ============================================================
+     Converged shell + content style (round 4), font swapped per variant
+     ============================================================ */
+  .v {
+    --bg: #14131a; --card: #1d1c26; --ink2: rgba(255,255,255,0.55); --ink3: rgba(255,255,255,0.32);
+    --lilac: #c7b8f0; --sage: #b9e3c6; --rose: #f3c6d1;
+    background: radial-gradient(ellipse 90% 50% at 50% -10%, #201e2c 0%, var(--bg) 55%);
+    color: #fff;
+  }
+  .v.f-inter   { font-family: 'Inter', -apple-system, sans-serif; }
+  .v.f-poppins { font-family: 'Poppins', -apple-system, sans-serif; }
+  .v.f-nunito  { font-family: 'Nunito', -apple-system, sans-serif; }
+  .v.f-manrope { font-family: 'Manrope', -apple-system, sans-serif; }
+
+  .shell-topbar {
+    position: sticky; top: 0; z-index: 5;
+    padding: max(14px, env(safe-area-inset-top)) 16px 10px;
+    background: rgba(20,19,26,0.75);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+  }
+  .title { font-size: 27px; font-weight: 700; letter-spacing: -0.01em; margin: 4px 0 0; }
+  .content { padding: 8px 16px 104px; }
+
+  .gcard {
+    background: var(--card); border-radius: 24px; padding: 18px; margin-bottom: 14px;
+    border: 1px solid rgba(255,255,255,0.05);
+    position: relative; overflow: hidden;
+    box-shadow: 0 24px 44px -30px var(--glow, transparent);
+  }
+  .gcard .blob {
+    position: absolute; top: -34px; right: -34px; width: 96px; height: 96px;
+    border-radius: 50%; opacity: 0.16; filter: blur(2px);
+    animation: blob-drift 7s ease-in-out infinite;
+  }
+  .gcard.tone-lilac { --glow: rgba(199,184,240,0.5); }
+  .gcard.tone-lilac .blob { background: var(--lilac); animation-delay: 0s; }
+  .gcard.tone-sage { --glow: rgba(185,227,198,0.45); }
+  .gcard.tone-sage .blob { background: var(--sage); animation-delay: -2.3s; }
+  .gcard.tone-rose { --glow: rgba(243,198,209,0.45); }
+  .gcard.tone-rose .blob { background: var(--rose); animation-delay: -4.6s; }
+  @keyframes blob-drift {
+    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.16; }
+    35%      { transform: translate(-14px, 10px) scale(0.82); opacity: 0.22; }
+    70%      { transform: translate(-6px, -8px) scale(1.12); opacity: 0.12; }
+  }
+  @media (prefers-reduced-motion: reduce) { .gcard .blob { animation: none; } }
+
+  .gtop { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; position: relative; }
+  .gname { font-size: 15px; font-weight: 700; }
+  .gval { font-size: 12px; color: var(--ink2); font-variant-numeric: tabular-nums; }
+  .gtrack { height: 8px; border-radius: 5px; background: rgba(255,255,255,0.08); overflow: hidden; margin-bottom: 12px; position: relative; }
+  .gfill { height: 100%; border-radius: 5px; }
+  .gbtns { display: flex; gap: 8px; position: relative; }
+  .gbtn { flex: 1; padding: 11px; border: none; border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .gbtn.minus { background: rgba(255,255,255,0.08); color: #fff; }
+  .gbtn.plus { color: #241c2e; }
+  .gbtn.plus.lilac { background: var(--lilac); }
+  .gbtn.plus.sage { background: var(--sage); }
+  .gbtn.plus.rose { background: var(--rose); }
+
+  .shell-tabbar {
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 10;
+    display: flex;
+    height: calc(49px + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
+    background: rgba(20,19,26,0.82);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .shell-tab {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 3px; font-size: 10px; font-weight: 600; min-height: 44px;
+    color: var(--ink3); font-family: inherit;
+  }
+  .shell-tab svg { width: 22px; height: 22px; stroke: currentColor; }
+  .shell-tab.active { color: var(--lilac); }
+  .shell-tab.active svg { filter: drop-shadow(0 0 6px rgba(199,184,240,0.55)); }
+
+  [data-variant] { display: none; }
+  [data-variant].is-active { display: block; }
+</style>
+</head>
+<body>
+
+<div class="proto-banner">PROTOTYPE — font exploration on the converged look, not shipped</div>
+<div class="proto-switcher">
+  <button class="arrow" id="protoPrev">&#8592;</button>
+  <span class="label" id="protoLabel">A <small>Inter</small></span>
+  <button class="arrow" id="protoNext">&#8594;</button>
+</div>
+
+<div class="proto-stage">
+  <div class="phone">
+    <div class="screen">
+
+      <!-- One shared markup block, font swapped by toggling the wrapper class per variant -->
+      <div data-variant="A"><div class="v f-inter">
+        <div class="shell-topbar"><h1 class="title">Habits</h1></div>
+        <div class="content">
+          <div class="gcard tone-lilac"><div class="blob"></div>
+            <div class="gtop"><span class="gname">Read</span><span class="gval">12 / 20 pages</span></div>
+            <div class="gtrack"><div class="gfill" style="width:60%;background:#c7b8f0"></div></div>
+            <div class="gbtns"><button class="gbtn minus">&minus; 1</button><button class="gbtn plus lilac">+ 1 page</button></div>
+          </div>
+          <div class="gcard tone-sage"><div class="blob"></div>
+            <div class="gtop"><span class="gname">No soda</span><span class="gval">0 / 0 cans</span></div>
+            <div class="gtrack"><div class="gfill" style="width:100%;background:#b9e3c6"></div></div>
+            <div class="gbtns"><button class="gbtn minus">&minus; 1</button><button class="gbtn plus sage">+ 1 can</button></div>
+          </div>
+          <div class="gcard tone-rose"><div class="blob"></div>
+            <div class="gtop"><span class="gname">Meditate</span><span class="gval">0 / 10 min</span></div>
+            <div class="gtrack"><div class="gfill" style="width:0%;background:#f3c6d1"></div></div>
+            <div class="gbtns"><button class="gbtn minus">&minus; 1</button><button class="gbtn plus rose">+ 1 min</button></div>
+          </div>
+        </div>
+        <div class="shell-tabbar">
+          <div class="shell-tab active"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>Main</div>
+          <div class="shell-tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.35-9.5-9.09C.94 7.6 2.6 4 6.2 4c2.13 0 3.9 1.19 4.8 3 .9-1.81 2.67-3 4.8-3 3.6 0 5.26 3.6 3.7 6.91C19 15.65 12 20 12 20z"/></svg>Health</div>
+          <div class="shell-tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="9" width="3" height="6" rx="1"/><rect x="19" y="9" width="3" height="6" rx="1"/><line x1="5" y1="12" x2="19" y2="12"/><rect x="6.5" y="7" width="2" height="10" rx="1"/><rect x="15.5" y="7" width="2" height="10" rx="1"/></svg>Fitness</div>
+          <div class="shell-tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg>Habits</div>
+        </div>
+      </div></div>
+
+      <div data-variant="B"><div class="v f-poppins">
+        <div class="shell-topbar"><h1 class="title">Habits</h1></div>
+        <div class="content">
+          <div class="gcard tone-lilac"><div class="blob"></div>
+            <div class="gtop"><span class="gname">Read</span><span class="gval">12 / 20 pages</span></div>
+            <div class="gtrack"><div class="gfill" style="width:60%;background:#c7b8f0"></div></div>
+            <div class="gbtns"><button class="gbtn minus">&minus; 1</button><button class="gbtn plus lilac">+ 1 page</button></div>
+          </div>
+          <div class="gcard tone-sage"><div class="blob"></div>
+            <div class="gtop"><span class="gname">No soda</span><span class="gval">0 / 0 cans</span></div>
+            <div class="gtrack"><div class="gfill" style="width:100%;background:#b9e3c6"></div></div>
+            <div class="gbtns"><button class="gbtn minus">&minus; 1</button><button class="gbtn plus sage">+ 1 can</button></div>
+          </div>
+          <div class="gcard tone-rose"><div class="blob"></div>
+            <div class="gtop"><span class="gname">Meditate</span><span class="gval">0 / 10 min</span></div>
+            <div class="gtrack"><div class="gfill" style="width:0%;background:#f3c6d1"></div></div>
+            <div class="gbtns"><button class="gbtn minus">&minus; 1</button><button class="gbtn plus rose">+ 1 min</button></div>
+          </div>
+        </div>
+        <div class="shell-tabbar">
+          <div class="shell-tab active"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>Main</div>
+          <div class="shell-tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.35-9.5-9.09C.94 7.6 2.6 4 6.2 4c2.13 0 3.9 1.19 4.8 3 .9-1.81 2.67-3 4.8-3 3.6 0 5.26 3.6 3.7 6.91C19 15.65 12 20 12 20z"/></svg>Health</div>
+          <div class="shell-tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="9" width="3" height="6" rx="1"/><rect x="19" y="9" width="3" height="6" rx="1"/><line x1="5" y1="12" x2="19" y2="12"/><rect x="6.5" y="7" width="2" height="10" rx="1"/><rect x="15.5" y="7" width="2" height="10" rx="1"/></svg>Fitness</div>
+          <div class="shell-tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg>Habits</div>
+        </div>
+      </div></div>
+
+      <div data-variant="C"><div class="v f-nunito">
+        <div class="shell-topbar"><h1 class="title">Habits</h1></div>
+        <div class="content">
+          <div class="gcard tone-lilac"><div class="blob"></div>
+            <div class="gtop"><span class="gname">Read</span><span class="gval">12 / 20 pages</span></div>
+            <div class="gtrack"><div class="gfill" style="width:60%;background:#c7b8f0"></div></div>
+            <div class="gbtns"><button class="gbtn minus">&minus; 1</button><button class="gbtn plus lilac">+ 1 page</button></div>
+          </div>
+          <div class="gcard tone-sage"><div class="blob"></div>
+            <div class="gtop"><span class="gname">No soda</span><span class="gval">0 / 0 cans</span></div>
+            <div class="gtrack"><div class="gfill" style="width:100%;background:#b9e3c6"></div></div>
+            <div class="gbtns"><button class="gbtn minus">&minus; 1</button><button class="gbtn plus sage">+ 1 can</button></div>
+          </div>
+          <div class="gcard tone-rose"><div class="blob"></div>
+            <div class="gtop"><span class="gname">Meditate</span><span class="gval">0 / 10 min</span></div>
+            <div class="gtrack"><div class="gfill" style="width:0%;background:#f3c6d1"></div></div>
+            <div class="gbtns"><button class="gbtn minus">&minus; 1</button><button class="gbtn plus rose">+ 1 min</button></div>
+          </div>
+        </div>
+        <div class="shell-tabbar">
+          <div class="shell-tab active"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>Main</div>
+          <div class="shell-tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.35-9.5-9.09C.94 7.6 2.6 4 6.2 4c2.13 0 3.9 1.19 4.8 3 .9-1.81 2.67-3 4.8-3 3.6 0 5.26 3.6 3.7 6.91C19 15.65 12 20 12 20z"/></svg>Health</div>
+          <div class="shell-tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="9" width="3" height="6" rx="1"/><rect x="19" y="9" width="3" height="6" rx="1"/><line x1="5" y1="12" x2="19" y2="12"/><rect x="6.5" y="7" width="2" height="10" rx="1"/><rect x="15.5" y="7" width="2" height="10" rx="1"/></svg>Fitness</div>
+          <div class="shell-tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg>Habits</div>
+        </div>
+      </div></div>
+
+      <div data-variant="D"><div class="v f-manrope">
+        <div class="shell-topbar"><h1 class="title">Habits</h1></div>
+        <div class="content">
+          <div class="gcard tone-lilac"><div class="blob"></div>
+            <div class="gtop"><span class="gname">Read</span><span class="gval">12 / 20 pages</span></div>
+            <div class="gtrack"><div class="gfill" style="width:60%;background:#c7b8f0"></div></div>
+            <div class="gbtns"><button class="gbtn minus">&minus; 1</button><button class="gbtn plus lilac">+ 1 page</button></div>
+          </div>
+          <div class="gcard tone-sage"><div class="blob"></div>
+            <div class="gtop"><span class="gname">No soda</span><span class="gval">0 / 0 cans</span></div>
+            <div class="gtrack"><div class="gfill" style="width:100%;background:#b9e3c6"></div></div>
+            <div class="gbtns"><button class="gbtn minus">&minus; 1</button><button class="gbtn plus sage">+ 1 can</button></div>
+          </div>
+          <div class="gcard tone-rose"><div class="blob"></div>
+            <div class="gtop"><span class="gname">Meditate</span><span class="gval">0 / 10 min</span></div>
+            <div class="gtrack"><div class="gfill" style="width:0%;background:#f3c6d1"></div></div>
+            <div class="gbtns"><button class="gbtn minus">&minus; 1</button><button class="gbtn plus rose">+ 1 min</button></div>
+          </div>
+        </div>
+        <div class="shell-tabbar">
+          <div class="shell-tab active"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>Main</div>
+          <div class="shell-tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.35-9.5-9.09C.94 7.6 2.6 4 6.2 4c2.13 0 3.9 1.19 4.8 3 .9-1.81 2.67-3 4.8-3 3.6 0 5.26 3.6 3.7 6.91C19 15.65 12 20 12 20z"/></svg>Health</div>
+          <div class="shell-tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="9" width="3" height="6" rx="1"/><rect x="19" y="9" width="3" height="6" rx="1"/><line x1="5" y1="12" x2="19" y2="12"/><rect x="6.5" y="7" width="2" height="10" rx="1"/><rect x="15.5" y="7" width="2" height="10" rx="1"/></svg>Fitness</div>
+          <div class="shell-tab"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg>Habits</div>
+        </div>
+      </div></div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var variants = ['A', 'B', 'C', 'D'];
+  var names = { A: 'Inter', B: 'Poppins', C: 'Nunito', D: 'Manrope' };
+  var params = new URLSearchParams(location.search);
+  var current = variants.indexOf((params.get('variant') || 'A').toUpperCase());
+  if (current < 0) current = 0;
+
+  function render() {
+    var key = variants[current];
+    document.querySelectorAll('[data-variant]').forEach(function(el) {
+      el.classList.toggle('is-active', el.getAttribute('data-variant') === key);
+    });
+    document.getElementById('protoLabel').innerHTML = key + ' <small>' + names[key] + '</small>';
+    var url = new URL(location.href);
+    url.searchParams.set('variant', key);
+    history.replaceState(null, '', url);
+  }
+  function move(delta) {
+    current = (current + delta + variants.length) % variants.length;
+    render();
+  }
+  document.getElementById('protoPrev').addEventListener('click', function() { move(-1); });
+  document.getElementById('protoNext').addEventListener('click', function() { move(1); });
+  document.addEventListener('keydown', function(e) {
+    var t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    if (e.key === 'ArrowLeft') move(-1);
+    if (e.key === 'ArrowRight') move(1);
+  });
+  render();
+})();
+</script>
+
+</body>
+</html>
