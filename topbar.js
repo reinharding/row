@@ -327,9 +327,11 @@ body.topbar-modal-open { overflow: hidden; touch-action: none; }
   }
 
   function boot() {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').catch(() => {});
-    }
+    try {
+      if ('serviceWorker' in navigator && !isEmbedded()) {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+      }
+    } catch (e) {}
     injectStyleAndHTML();
     const btn = document.getElementById('topbarWaterAdd');
     if (btn) btn.addEventListener('click', (e) => { e.preventDefault(); addWater(); });

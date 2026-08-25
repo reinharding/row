@@ -3,6 +3,12 @@
 // Deliberately does NOT cache or queue Supabase data — sync.js still
 // needs a live connection for reads/writes; this only makes the app
 // shell itself load offline.
+//
+// IMPORTANT: bump CACHE_NAME (e.g. 'row-shell-v2') every time you deploy
+// a change to any file in SHELL_ASSETS below — this cache-first strategy
+// will otherwise keep serving already-visited clients the old version
+// indefinitely. The 'activate' handler below deletes old-named caches
+// automatically once you do.
 const CACHE_NAME = 'row-shell-v1';
 const SHELL_ASSETS = [
   'index.html',
