@@ -268,13 +268,6 @@ html, body {
     <div id="habitsList"></div>
   </div>
 
-  <div class="divider"><span>LAST 14 DAYS</span></div>
-
-  <div class="card">
-    <div class="hist-legend" id="histLegend"></div>
-    <div id="histTable"></div>
-  </div>
-
   <div class="divider"><span>ADD A HABIT</span></div>
 
   <div class="card">
@@ -304,6 +297,13 @@ html, body {
       <input type="number" id="newWeeklyTarget" min="1" max="7" step="1" placeholder="7">
     </div>
     <button class="btn-primary" id="addHabitBtn">Add habit</button>
+  </div>
+
+  <div class="divider"><span>LAST 14 DAYS</span></div>
+
+  <div class="card">
+    <div class="hist-legend" id="histLegend"></div>
+    <div id="histTable"></div>
   </div>
 
   <div class="divider"><span>DATA</span></div>
@@ -380,15 +380,19 @@ html, body {
   }
 
   // Identity color per habit, gated on habit.id so it stays stable across
-  // reorder/delete/import — not derived from array position.
-  const HABIT_PALETTE = ['#7DD3FC','#6ee7b7','#fbbf24','#ff8a8a','#c4b5fd','#fda4af','#67e8f9','#fcd34d'];
+  // reorder/delete/import — not derived from array position. Build habits
+  // draw from a cool palette (blue/green/purple); quit habits draw from a
+  // warm, alarming palette (red/orange — stop-sign association).
+  const BUILD_PALETTE = ['#7DD3FC','#6ee7b7','#818cf8','#67e8f9','#93c5fd','#a7f3d0','#c4b5fd','#5eead4'];
+  const QUIT_PALETTE  = ['#ff8a8a','#fb923c','#f87171','#f97316','#ef4444','#fdba74','#fca5a5','#fbbf24'];
   function hashStringToIndex(str, mod) {
     let h = 0;
     for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0;
     return Math.abs(h) % mod;
   }
   function habitColor(habit) {
-    return HABIT_PALETTE[hashStringToIndex(habit.id, HABIT_PALETTE.length)];
+    const palette = habit.type === 'quit' ? QUIT_PALETTE : BUILD_PALETTE;
+    return palette[hashStringToIndex(habit.id, palette.length)];
   }
 
   // ============================================================
