@@ -156,13 +156,29 @@ html, body {
 }
 .habit-plus-btn:hover { background: #ffffff; }
 
-.habit-history { display: flex; gap: 4px; margin-top: 12px; }
-.habit-history-sq {
-  flex: 1; max-width: 16px; height: 16px; border-radius: 4px;
+/* ----- Shared 14-day history table ----- */
+.hist-legend { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; }
+.hist-legend-item { display: flex; align-items: center; gap: 6px; }
+.hist-legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+.hist-legend-name { font-size: 12px; color: var(--text-2); }
+
+.hist-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+}
+.hist-row:last-child { border-bottom: none; }
+.hist-row-date {
+  width: 62px; flex-shrink: 0;
+  font-size: 11px; color: var(--text-3);
+  font-family: var(--font-mono);
+}
+.hist-row-squares { display: flex; gap: 6px; flex-wrap: wrap; }
+.hist-sq {
+  width: 16px; height: 16px; border-radius: 4px;
   background: rgba(255,255,255,0.04);
   border: 1px solid var(--border);
 }
-.habit-history-sq.met { background: var(--good); border-color: var(--good); }
 
 .empty-state {
   text-align: center; font-size: 13px; color: var(--text-3);
@@ -250,6 +266,13 @@ html, body {
 
   <div class="card">
     <div id="habitsList"></div>
+  </div>
+
+  <div class="divider"><span>LAST 14 DAYS</span></div>
+
+  <div class="card">
+    <div class="hist-legend" id="histLegend"></div>
+    <div id="histTable"></div>
   </div>
 
   <div class="divider"><span>ADD A HABIT</span></div>
@@ -356,6 +379,18 @@ html, body {
     return habit.unit ? (base + ' ' + habit.unit) : base;
   }
 
+  // Identity color per habit, gated on habit.id so it stays stable across
+  // reorder/delete/import — not derived from array position.
+  const HABIT_PALETTE = ['#7DD3FC','#6ee7b7','#fbbf24','#ff8a8a','#c4b5fd','#fda4af','#67e8f9','#fcd34d'];
+  function hashStringToIndex(str, mod) {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0;
+    return Math.abs(h) % mod;
+  }
+  function habitColor(habit) {
+    return HABIT_PALETTE[hashStringToIndex(habit.id, HABIT_PALETTE.length)];
+  }
+
   // ============================================================
   // RENDER
   // ============================================================
@@ -366,24 +401,48 @@ html, body {
     $('dayPillLabel').textContent = dows[d.getDay()] + ', ' + mons[d.getMonth()] + ' ' + d.getDate();
   }
 
-  function renderHistorySquares(habit) {
-    let html = '';
-    for (let i = 13; i >= 0; i--) {
+  function renderHistory() {
+    const legend = $('histLegend');
+    const table = $('histTable');
+    if (!state.habits.length) {
+      legend.innerHTML = '';
+      table.innerHTML = '<div class="empty-state">No habits yet — add one below.</div>';
+      return;
+    }
+    legend.innerHTML = state.habits.map(habit =>
+      '<div class="hist-legend-item">'
+      + '<span class="hist-legend-dot" style="background:' + habitColor(habit) + '"></span>'
+      + '<span class="hist-legend-name">' + escape(habit.name) + '</span>'
+      + '</div>'
+    ).join('');
+
+    const dows = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    let rows = '';
+    for (let i = 0; i <= 13; i++) {
       const d = new Date();
       d.setDate(d.getDate() - i);
       const k = dateKey(d);
-      const v = (state.checkins[habit.id] || {})[k] || 0;
-      const met = habitMet(habit, v);
-      const label = k + ': ' + v + (habit.unit ? ' ' + habit.unit : '') + ' — ' + (met ? 'met' : 'not met');
-      html += '<div class="habit-history-sq' + (met ? ' met' : '') + '" title="' + escape(label) + '"></div>';
+      const label = dows[d.getDay()] + ' ' + (d.getMonth()+1) + '/' + d.getDate();
+      const squares = state.habits.map(habit => {
+        const v = (state.checkins[habit.id] || {})[k] || 0;
+        const met = habitMet(habit, v);
+        const title = habit.name + ' — ' + k + ': ' + v + (habit.unit ? ' ' + habit.unit : '') + ' — ' + (met ? 'met' : 'not met');
+        const style = met ? ' style="background:' + habitColor(habit) + ';border-color:' + habitColor(habit) + '"' : '';
+        return '<div class="hist-sq" title="' + escape(title) + '"' + style + '></div>';
+      }).join('');
+      rows += '<div class="hist-row">'
+        + '<span class="hist-row-date">' + label + '</span>'
+        + '<div class="hist-row-squares">' + squares + '</div>'
+        + '</div>';
     }
-    return '<div class="habit-history">' + html + '</div>';
+    table.innerHTML = rows;
   }
 
   function renderHabits() {
     const list = $('habitsList');
     if (!state.habits.length) {
       list.innerHTML = '<div class="empty-state">No habits yet — add one below.</div>';
+      renderHistory();
       return;
     }
     list.innerHTML = state.habits.map(habit => {
@@ -405,7 +464,6 @@ html, body {
         +   '<button class="habit-minus-btn" data-id="' + habit.id + '"' + (value <= 0 ? ' disabled' : '') + ' aria-label="Remove one">−</button>'
         +   '<button class="habit-plus-btn" data-id="' + habit.id + '">+1</button>'
         + '</div>'
-        + renderHistorySquares(habit)
         + '</div>';
     }).join('');
 
@@ -423,6 +481,8 @@ html, body {
         renderHabits();
       });
     });
+
+    renderHistory();
   }
 
   function renderAll() { renderDayPill(); renderHabits(); }
