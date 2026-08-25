@@ -121,6 +121,13 @@ html, body {
   font-family: var(--font-mono); font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
+.habit-top-right { display: flex; align-items: center; gap: 8px; }
+.habit-delete-btn {
+  background: transparent; border: none; color: var(--text-4);
+  font-size: 16px; line-height: 1; cursor: pointer; padding: 2px 4px;
+  -webkit-tap-highlight-color: transparent;
+}
+.habit-delete-btn:hover { color: var(--bad); }
 
 .habit-bar-track {
   position: relative; height: 10px; border-radius: 5px;
@@ -460,7 +467,10 @@ html, body {
         +   '<span class="habit-name">' + escape(habit.name)
         +     '<span class="habit-type-badge">' + (habit.type === 'quit' ? 'Quit' : 'Build') + '</span>'
         +   '</span>'
-        +   '<span class="habit-value">' + escape(habitValueLabel(habit, value)) + '</span>'
+        +   '<span class="habit-top-right">'
+        +     '<span class="habit-value">' + escape(habitValueLabel(habit, value)) + '</span>'
+        +     '<button class="habit-delete-btn" data-id="' + habit.id + '" data-name="' + escape(habit.name) + '" aria-label="Delete habit">×</button>'
+        +   '</span>'
         + '</div>'
         + '<div class="habit-bar-track">'
         +   '<div class="habit-bar-fill ' + barCls + '" style="' + barStyle + '"></div>'
@@ -476,6 +486,16 @@ html, body {
       btn.addEventListener('click', () => {
         const id = btn.dataset.id;
         setTodayValue(id, todayValue(id) + 1);
+        renderHabits();
+      });
+    });
+    list.querySelectorAll('.habit-delete-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        if (!confirm('Delete "' + btn.dataset.name + '"? This removes all its check-in history and cannot be undone.')) return;
+        state.habits = state.habits.filter(h => h.id !== id);
+        delete state.checkins[id];
+        saveState();
         renderHabits();
       });
     });
