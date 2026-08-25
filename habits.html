@@ -454,6 +454,7 @@ html, body {
       const met = habitMet(habit, value);
       const pct = habitProgressPct(habit, value);
       const barCls = habitBarClass(habit, value, met);
+      const barStyle = 'width:' + pct + '%' + (met ? ';background:' + habitColor(habit) : '');
       return '<div class="habit-row" data-id="' + habit.id + '">'
         + '<div class="habit-top">'
         +   '<span class="habit-name">' + escape(habit.name)
@@ -462,7 +463,7 @@ html, body {
         +   '<span class="habit-value">' + escape(habitValueLabel(habit, value)) + '</span>'
         + '</div>'
         + '<div class="habit-bar-track">'
-        +   '<div class="habit-bar-fill ' + barCls + '" style="width:' + pct + '%"></div>'
+        +   '<div class="habit-bar-fill ' + barCls + '" style="' + barStyle + '"></div>'
         + '</div>'
         + '<div class="habit-checkin">'
         +   '<button class="habit-minus-btn" data-id="' + habit.id + '"' + (value <= 0 ? ' disabled' : '') + ' aria-label="Remove one">−</button>'
