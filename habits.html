@@ -470,7 +470,10 @@ html, body {
       const met = habitMet(habit, value);
       const pct = habitProgressPct(habit, value);
       const barCls = habitBarClass(habit, value, met);
-      const barStyle = 'width:' + pct + '%' + (met ? ';background:' + habitColor(habit) : '');
+      // Build habits show their assigned color throughout, not just once met;
+      // quit habits keep the shared warn-red until met (a warning, not an identity color).
+      const showOwnColor = met || habit.type !== 'quit';
+      const barStyle = 'width:' + pct + '%' + (showOwnColor ? ';background:' + habitColor(habit) : '');
       const glow = habitColor(habit);
       return '<div class="habit-row" data-id="' + habit.id + '" style="--glow:' + glow + '55;--glow-color:' + glow + '">'
         + '<div class="blob"></div>'
