@@ -9,7 +9,7 @@
 // will otherwise keep serving already-visited clients the old version
 // indefinitely. The 'activate' handler below deletes old-named caches
 // automatically once you do.
-const CACHE_NAME = 'row-shell-v2';
+const CACHE_NAME = 'row-shell-v3';
 const SHELL_ASSETS = [
   'index.html',
   'habits.html',
