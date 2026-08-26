@@ -29,6 +29,15 @@ embedded iframes — the sticky top bar and the fixed bottom tab bar
 Distinct from each page's own content; a page "joining the shell" means
 it stops opting out of this injected chrome.
 
+**Design Tokens**: The shared CSS custom properties in `theme.css` (colors
+and font stack) that give every page the same dark-pastel look. Radii stay
+hardcoded per component, not tokenized. Distinct
+from the App Shell, which is injected markup/behavior, not styling; and
+distinct from each page's own component CSS (`.card`, `.po-*`, `.stack-*`,
+etc.), which stays page-local and is only repainted with these tokens, not
+shared. See `docs/adr/0001-theme-css-tokens-only.md` for why component
+classes aren't shared too.
+
 ## Notes
 
 `row/habits.html` is the actively-maintained habit tracker going

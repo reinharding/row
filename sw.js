@@ -9,7 +9,7 @@
 // will otherwise keep serving already-visited clients the old version
 // indefinitely. The 'activate' handler below deletes old-named caches
 // automatically once you do.
-const CACHE_NAME = 'row-shell-v1';
+const CACHE_NAME = 'row-shell-v2';
 const SHELL_ASSETS = [
   'index.html',
   'habits.html',
@@ -18,6 +18,7 @@ const SHELL_ASSETS = [
   'po-water.html',
   'topbar.js',
   'sync.js',
+  'theme.css',
   'manifest.json',
   'icons/icon-192.png',
   'icons/icon-512.png',

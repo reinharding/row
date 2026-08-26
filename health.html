@@ -3,50 +3,41 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#050506">
+<meta name="theme-color" content="#14131a">
 <meta name="color-scheme" content="dark">
 <title>Daily Stack — Customizable Template</title>
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="sync.js" defer></script>
 <script src="topbar.js" defer></script>
 <style>
 :root {
-  --bg: #050506;
-  --bg-card: rgba(255, 255, 255, 0.04);
   --bg-secondary: rgba(255, 255, 255, 0.035);
   --bg-input: rgba(0, 0, 0, 0.28);
   --bg-input-focus: rgba(0, 0, 0, 0.36);
   --bg-dropdown: rgba(15, 15, 18, 0.96);
 
-  --border: rgba(255, 255, 255, 0.06);
   --border-soft: rgba(255, 255, 255, 0.04);
-  --border-strong: rgba(255, 255, 255, 0.12);
-
-  --text-primary: #FAFAFA;
-  --text-secondary: #B8B6B0;
-  --text-tertiary: #76746E;
-  --text-quaternary: #4D4B47;
 
   --accent: #1D9E75;
   --accent-glow: rgba(29, 158, 117, 0.35);
-  --warning: #FF8A4D;
-  --warning-bg: rgba(163, 45, 45, 0.10);
+  --warn-bg: rgba(163, 45, 45, 0.10);
   --tag-stack: #D8AB30;
   --tag-stack-bg: rgba(216, 171, 48, 0.15);
-
-  --font: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 
 * { box-sizing: border-box; }
 html, body {
   margin: 0; padding: 0;
   background: var(--bg);
-  color: var(--text-secondary);
+  color: var(--text-2);
   font-family: var(--font);
   font-size: 15px; line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -82,7 +73,7 @@ main {
   font-family: var(--font-mono);
   font-size: 11px; font-weight: 600;
   letter-spacing: 0.18em; text-transform: uppercase;
-  color: var(--text-tertiary);
+  color: var(--text-3);
   margin: 0 4px 14px;
   display: flex; align-items: center; gap: 12px;
 }
@@ -117,18 +108,18 @@ main {
   font-family: var(--font-mono);
   font-size: 11px; font-weight: 600;
   letter-spacing: 0.16em; text-transform: uppercase;
-  color: var(--text-tertiary);
+  color: var(--text-3);
   margin-bottom: 6px;
 }
 .sf-title {
   font-size: 24px; font-weight: 700;
   letter-spacing: -0.022em;
-  color: var(--text-primary);
+  color: var(--text-1);
   line-height: 1.15; margin-bottom: 2px;
 }
 .stack-progress-text {
   font-family: var(--font-mono);
-  font-size: 12px; color: var(--text-tertiary);
+  font-size: 12px; color: var(--text-3);
   font-variant-numeric: tabular-nums;
   margin-top: 6px;
 }
@@ -152,8 +143,8 @@ main {
   border-bottom: 1px solid var(--border-soft);
 }
 .stack-window-icon { font-size: 16px; }
-.stack-window-title { font-size: 13px; font-weight: 700; color: var(--text-primary); }
-.stack-window-time { font-size: 11px; color: var(--text-tertiary); font-weight: 500; }
+.stack-window-title { font-size: 13px; font-weight: 700; color: var(--text-1); }
+.stack-window-time { font-size: 11px; color: var(--text-3); font-weight: 500; }
 
 .stack-item {
   display: grid;
@@ -169,7 +160,7 @@ main {
 }
 .stack-item:hover { background: rgba(255,255,255,0.05); }
 .stack-item.taken { background: rgba(29,158,117,0.08); }
-.stack-item.taken .stack-item-name { text-decoration: line-through; color: var(--text-tertiary); }
+.stack-item.taken .stack-item-name { text-decoration: line-through; color: var(--text-3); }
 
 @keyframes pulse-red {
   0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
@@ -204,7 +195,7 @@ main {
 .stack-item-body { min-width: 0; }
 .stack-item-name {
   font-size: 14px; font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-1);
   line-height: 1.2;
   display: inline-flex; align-items: center;
   gap: 8px; flex-wrap: wrap;
@@ -215,17 +206,17 @@ main {
   outline-offset: 4px; border-radius: 4px;
 }
 .stack-item-meta {
-  font-size: 11px; color: var(--text-tertiary);
+  font-size: 11px; color: var(--text-3);
   margin-top: 2px; outline: none; cursor: text;
 }
 .stack-item-meta[contenteditable="true"] {
   outline: 1px solid rgba(255,255,255,0.2);
   outline-offset: 4px; border-radius: 4px;
-  color: var(--text-secondary);
+  color: var(--text-2);
 }
 .stack-item-meta:empty::before {
   content: 'add notes…';
-  color: var(--text-quaternary);
+  color: var(--text-4);
   font-style: italic;
 }
 
@@ -237,12 +228,12 @@ main {
   text-transform: lowercase;
 }
 .stack-item-tag.tag-stack { background: var(--tag-stack-bg); color: var(--tag-stack); }
-.stack-item-tag.tag-not-ordered { background: var(--warning-bg); color: var(--text-tertiary); }
+.stack-item-tag.tag-not-ordered { background: var(--warn-bg); color: var(--text-3); }
 
 .stack-low-btn {
   background: transparent;
   border: 1px solid var(--border-strong);
-  color: var(--text-tertiary);
+  color: var(--text-3);
   font-size: 10px;
   padding: 5px 9px; border-radius: 6px;
   cursor: pointer;
@@ -252,17 +243,17 @@ main {
   display: inline-flex; align-items: center; gap: 4px;
   transition: all 0.15s;
 }
-.stack-low-btn:hover { border-color: rgba(163,45,45,0.4); color: var(--warning); }
+.stack-low-btn:hover { border-color: rgba(163,45,45,0.4); color: var(--warn); }
 .stack-low-btn.is-low {
-  background: var(--warning-bg);
+  background: var(--warn-bg);
   border-color: rgba(163,45,45,0.4);
-  color: var(--warning);
+  color: var(--warn);
 }
 
 .stack-item-del {
   background: transparent;
   border: 1px solid var(--border-strong);
-  color: var(--text-tertiary);
+  color: var(--text-3);
   cursor: pointer;
   font-size: 16px;
   padding: 4px 10px; border-radius: 6px;
@@ -283,7 +274,7 @@ main {
 
 .stack-window-empty {
   font-size: 12px;
-  color: var(--text-quaternary);
+  color: var(--text-4);
   font-style: italic;
   padding: 8px 12px;
 }
@@ -323,15 +314,15 @@ main {
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--text-tertiary);
+  color: var(--text-3);
   flex-shrink: 0;
 }
-.stack-ticker-sep { color: var(--text-quaternary); flex-shrink: 0; }
+.stack-ticker-sep { color: var(--text-4); flex-shrink: 0; }
 .stack-ticker-msg {
   flex: 1;
   font-size: 12px;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-1);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -341,7 +332,7 @@ main {
 .stack-ticker-count {
   font-family: var(--font-mono);
   font-size: 11px;
-  color: var(--text-tertiary);
+  color: var(--text-3);
   font-variant-numeric: tabular-nums;
   flex-shrink: 0;
 }
@@ -364,11 +355,11 @@ main {
   border-radius: 10px;
   border: 1px solid var(--border-strong);
   background: var(--bg-input);
-  color: var(--text-primary);
+  color: var(--text-1);
   font-family: inherit;
   transition: border-color 0.18s, background 0.18s;
 }
-.stack-input::placeholder { color: var(--text-tertiary); }
+.stack-input::placeholder { color: var(--text-3); }
 .stack-input:focus {
   outline: none;
   border-color: rgba(255, 255, 255, 0.40);
@@ -428,7 +419,7 @@ main {
   cursor: pointer;
   text-align: left;
   font-family: inherit;
-  color: var(--text-secondary);
+  color: var(--text-2);
   transition: background 0.12s;
 }
 .stack-result:hover, .stack-result.is-focused { background: rgba(255, 255, 255, 0.06); }
@@ -437,10 +428,10 @@ main {
 .stack-result-body { min-width: 0; flex: 1; }
 .stack-result-name {
   font-size: 13px; font-weight: 600;
-  color: var(--text-primary); line-height: 1.2;
+  color: var(--text-1); line-height: 1.2;
 }
 .stack-result-meta {
-  font-size: 11px; color: var(--text-tertiary);
+  font-size: 11px; color: var(--text-3);
   margin-top: 2px;
 }
 
@@ -450,7 +441,7 @@ main {
   font-size: 10px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--text-quaternary);
+  color: var(--text-4);
 }
 
 @media (max-width: 600px) {
@@ -464,7 +455,7 @@ main {
   .stack-search-results { width: 100%; }
 }
 
-::selection { background: rgba(224, 118, 88, 0.3); color: var(--text-primary); }
+::selection { background: rgba(224, 118, 88, 0.3); color: var(--text-1); }
 ::-webkit-scrollbar { width: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 999px; }
